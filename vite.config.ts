@@ -10,7 +10,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://backendaquo-production.up.railway.app/api',
+        target: 'https://backendaquo-production.up.railway.app',
         changeOrigin: true,
         secure: false,
       }
