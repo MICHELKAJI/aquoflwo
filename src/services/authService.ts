@@ -3,7 +3,7 @@ import { getAllSites, createSite } from '../services/siteService';
 import { getAllNotifications } from '../services/notificationService';
 import { User } from '../types';
 
-const API_URL = '/api/auth';
+const API_URL = '/api';
 
 // Créer une instance axios avec la configuration par défaut
 const api = axios.create({
@@ -44,7 +44,7 @@ export interface AuthResponse {
 
 export const login = async (email: string, password: string): Promise<{ user: User; token: string }> => {
   try {
-    const response = await api.post('/login', { email, password });
+    const response = await api.post('/auth/login', { email, password });
     const { user, token } = response.data;
     localStorage.setItem('token', token);
     return { user, token };
@@ -56,7 +56,7 @@ export const login = async (email: string, password: string): Promise<{ user: Us
 
 export const register = async (data: RegisterData): Promise<AuthResponse> => {
   try {
-    const response = await api.post('/register', data);
+    const response = await api.post('/auth/register', data);
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
     }
@@ -76,7 +76,7 @@ export const getCurrentUser = async (): Promise<User | null> => {
     const token = localStorage.getItem('token');
     if (!token) return null;
 
-    const response = await api.get('/profile');
+    const response = await api.get('/auth/profile');
     return response.data;
   } catch (error: any) {
     console.error('Erreur lors de la récupération de l\'utilisateur:', error.response?.data || error.message);
