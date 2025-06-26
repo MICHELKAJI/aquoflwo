@@ -1,7 +1,10 @@
 import axios from 'axios';
 import { Alert } from '../types';
 
-const API_URL = '/api';
+// URL de l'API - en production, utilisez l'URL Railway
+const API_URL = import.meta.env.PROD 
+  ? 'https://backendaquo-production.up.railway.app/api'
+  : (import.meta.env.VITE_API_URL || '/api');
 
 // Créer une instance axios avec la configuration par défaut
 const api = axios.create({

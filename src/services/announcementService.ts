@@ -1,7 +1,10 @@
 import axios from 'axios';
 import { Announcement } from '../types';
 
-const API_URL = '/api/announcements';
+// URL de l'API - en production, utilisez l'URL Railway
+const API_URL = import.meta.env.PROD 
+  ? 'https://backendaquo-production.up.railway.app/api'
+  : (import.meta.env.VITE_API_URL || '/api');
 
 // Créer une instance axios avec la configuration par défaut
 const api = axios.create({
@@ -22,7 +25,7 @@ api.interceptors.request.use((config) => {
 
 export const getAllAnnouncements = async (): Promise<Announcement[]> => {
   try {
-    const response = await api.get('/');
+    const response = await api.get('/announcements');
     return response.data;
   } catch (error: any) {
     console.error('Erreur lors de la récupération des annonces:', error);
@@ -32,7 +35,7 @@ export const getAllAnnouncements = async (): Promise<Announcement[]> => {
 
 export const getAnnouncementById = async (id: string): Promise<Announcement> => {
   try {
-    const response = await api.get(`/${id}`);
+    const response = await api.get(`/announcements/${id}`);
     return response.data;
   } catch (error: any) {
     console.error('Erreur lors de la récupération de l\'annonce:', error);
@@ -42,7 +45,7 @@ export const getAnnouncementById = async (id: string): Promise<Announcement> => 
 
 export const createAnnouncement = async (announcementData: Omit<Announcement, 'id' | 'createdAt'>): Promise<Announcement> => {
   try {
-    const response = await api.post('/', announcementData);
+    const response = await api.post('/announcements', announcementData);
     return response.data;
   } catch (error: any) {
     console.error('Erreur lors de la création de l\'annonce:', error);
@@ -52,7 +55,7 @@ export const createAnnouncement = async (announcementData: Omit<Announcement, 'i
 
 export const updateAnnouncement = async (id: string, announcementData: Partial<Announcement>): Promise<Announcement> => {
   try {
-    const response = await api.patch(`/${id}`, announcementData);
+    const response = await api.patch(`/announcements/${id}`, announcementData);
     return response.data;
   } catch (error: any) {
     console.error('Erreur lors de la mise à jour de l\'annonce:', error);
@@ -62,7 +65,7 @@ export const updateAnnouncement = async (id: string, announcementData: Partial<A
 
 export const deleteAnnouncement = async (id: string): Promise<void> => {
   try {
-    await api.delete(`/${id}`);
+    await api.delete(`/announcements/${id}`);
   } catch (error: any) {
     console.error('Erreur lors de la suppression de l\'annonce:', error);
     throw new Error(error.response?.data?.message || 'Erreur lors de la suppression de l\'annonce');

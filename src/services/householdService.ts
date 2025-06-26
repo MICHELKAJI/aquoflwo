@@ -1,7 +1,10 @@
 import axios from 'axios';
 import { Household } from '../types';
 
-const API_URL = '/api/households';
+// URL de l'API - en production, utilisez l'URL Railway
+const API_URL = import.meta.env.PROD 
+  ? 'https://backendaquo-production.up.railway.app/api/households'
+  : (import.meta.env.VITE_API_URL || '/api') + '/households';
 
 export const getAllHouseholds = async (): Promise<Household[]> => {
   const token = localStorage.getItem('token');
