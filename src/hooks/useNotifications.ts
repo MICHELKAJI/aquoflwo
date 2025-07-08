@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Notification } from '../types';
+import { getAllNotifications } from '../services/notificationService';
 
 export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -9,12 +10,8 @@ export function useNotifications() {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/notifications');
-      if (!response.ok) {
-        throw new Error('Erreur lors de la récupération des notifications');
-      }
-      const data = await response.json();
-      setNotifications(data);
+      const notifications = await getAllNotifications();
+      setNotifications(notifications);
     } catch (err: any) {
       setError(err.message);
     } finally {

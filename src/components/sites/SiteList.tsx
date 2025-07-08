@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Droplet, MapPin, User, Edit, Trash2, Plus } from 'lucide-react';
 import { User as UserType, Household } from '../../types';
 import SiteForm from './SiteForm';
+import { getAllSites } from '../../services/siteService';
+import { getSectorManagers } from '../../services/userService';
 
 interface Site {
   id: string;
@@ -39,9 +41,7 @@ export default function SiteList({ onSiteSelect }: SiteListProps) {
 
   const fetchSites = async () => {
     try {
-      const response = await fetch('/api/sites');
-      if (!response.ok) throw new Error('Erreur lors de la récupération des sites');
-      const data = await response.json();
+      const data = await getAllSites();
       setSites(data);
     } catch (error) {
       setError('Erreur lors du chargement des sites');
@@ -51,9 +51,7 @@ export default function SiteList({ onSiteSelect }: SiteListProps) {
 
   const fetchSectorManagers = async () => {
     try {
-      const response = await fetch('/api/users?role=SECTOR_MANAGER');
-      if (!response.ok) throw new Error('Erreur lors de la récupération des chefs de secteur');
-      const data = await response.json();
+      const data = await getSectorManagers();
       setSectorManagers(data);
     } catch (error) {
       console.error('Erreur:', error);

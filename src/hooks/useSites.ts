@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Site } from '../types';
+import { getAllSites } from '../services/siteService';
 
 export function useSites() {
   const [sites, setSites] = useState<Site[]>([]);
@@ -9,12 +10,8 @@ export function useSites() {
   const fetchSites = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/sites');
-      if (!response.ok) {
-        throw new Error('Erreur lors de la récupération des sites');
-      }
-      const data = await response.json();
-      setSites(data);
+      const sites = await getAllSites();
+      setSites(sites);
     } catch (err: any) {
       setError(err.message);
     } finally {
