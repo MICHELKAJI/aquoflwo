@@ -7,10 +7,8 @@ interface DashboardStats {
   averageWaterLevel: number;
 }
 
-// URL de l'API - en production, utilisez l'URL Railway
-const API_URL = import.meta.env.PROD 
-  ? 'https://backendaquo-production.up.railway.app/api/dashboard'
-  : (import.meta.env.VITE_API_URL || '/api') + '/dashboard';
+// Remplacer la définition de API_URL par :
+const API_URL = 'https://backendaquo-production.up.railway.app/api/dashboard';
 
 export const getDashboardStats = async (): Promise<DashboardStats> => {
   const token = localStorage.getItem('token');
