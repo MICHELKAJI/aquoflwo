@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, Shield, Edit, Trash2, Plus, Key } from 'lucide-react';
+import { createUser } from '../../services/userService';
 
 interface UserData {
   id: string;
@@ -41,17 +42,7 @@ export default function UserManagement() {
 
   const handleCreateUser = async (userData: any) => {
     try {
-      const response = await fetch('/api/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Erreur lors de la création de l\'utilisateur');
-      }
-
+      await createUser(userData);
       await fetchUsers();
       setIsFormOpen(false);
       setSuccess('Utilisateur créé avec succès');

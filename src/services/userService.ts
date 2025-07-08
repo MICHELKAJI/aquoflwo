@@ -42,3 +42,13 @@ export const getSectorManagers = async (): Promise<User[]> => {
     throw new Error(error.response?.data?.message || 'Erreur lors de la récupération des chefs de secteur');
   }
 }; 
+
+export const createUser = async (userData: Omit<User, 'id' | 'createdAt'> & { password: string }): Promise<User> => {
+  try {
+    const response = await api.post('/users', userData);
+    return response.data;
+  } catch (error: any) {
+    console.error("Erreur lors de la création de l'utilisateur:", error);
+    throw new Error(error.response?.data?.message || "Erreur lors de la création de l'utilisateur");
+  }
+}; 

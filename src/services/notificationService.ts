@@ -45,7 +45,7 @@ export const getNotificationById = async (id: string): Promise<Notification> => 
 
 export const createNotification = async (notificationData: Omit<Notification, 'id' | 'sentAt'>): Promise<Notification> => {
   try {
-    const response = await api.post('/', notificationData);
+    const response = await api.post('/notifications', notificationData);
     return response.data;
   } catch (error: any) {
     console.error('Erreur lors de la création de la notification:', error);
