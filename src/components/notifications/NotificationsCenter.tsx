@@ -1,20 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bell, Send, AlertTriangle, Droplets, Wrench, Users, Plus, X } from 'lucide-react';
 import { Notification, Site } from '../../types';
 import { useNavigate } from 'react-router-dom';
-import { createNotification } from '../../services/notificationService';
+import { createNotification, getAllNotifications } from '../../services/notificationService';
 
 interface NotificationsCenterProps {
-  notifications: Notification[];
   sites: Site[];
-  onSendNotification: (notification: Omit<Notification, 'id' | 'sentAt' | 'sentById'>) => void;
   onShowDashboard: () => void;
 }
 
-export default function NotificationsCenter({ notifications, sites, onSendNotification, onShowDashboard }: NotificationsCenterProps) {
+export default function NotificationsCenter({ sites, onShowDashboard }: NotificationsCenterProps) {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedType, setSelectedType] = useState<'all' | 'LOW_LEVEL' | 'MAINTENANCE' | 'EMERGENCY'>('all');
   const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        setLoading(true);
+        const notificationsData = await getAllNotifications();
+        setNotifications(notificationsData);
+      } catch (err: any) {
+        console.error('Erreur lors de la récupération des notifications:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
 
   // Ajout des logs pour déboguer
   console.log('Notifications reçues:', notifications);
