@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Bell, Send, AlertTriangle, Droplets, Wrench, Users, Plus, X } from 'lucide-react';
 import { Notification, Site } from '../../types';
 import { useNavigate } from 'react-router-dom';
+import { createNotification } from '../../services/notificationService';
 
 interface NotificationsCenterProps {
   notifications: Notification[];
@@ -64,7 +65,7 @@ export default function NotificationsCenter({ notifications, sites, onSendNotifi
     }
   };
 
-  const handleCreateNotification = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateNotification = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     
@@ -78,12 +79,17 @@ export default function NotificationsCenter({ notifications, sites, onSendNotifi
       status: 'PENDING' as const,
       siteId: siteId || '',
       recipients: recipients,
+      sentById: 'current-user-id', // ← Ajouter cette ligne
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
-    onSendNotification(newNotification);
-    setShowCreateForm(false);
+    try {
+      await createNotification(newNotification);
+      setShowCreateForm(false);
+    } catch (error) {
+      // Gérer l'erreur
+    }
   };
 
   return (
