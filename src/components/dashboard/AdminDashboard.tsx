@@ -5,6 +5,7 @@ import WaterLevelChart from '../common/WaterLevelChart';
 import { Site, Notification, User } from '../../types';
 import { getAllSites } from '../../services/siteService';
 import { getAllNotifications } from '../../services/notificationService';
+import { createUser } from '../../services/userService';
 
 interface AdminDashboardProps {
   onNavigate: (page: string) => void;
@@ -64,19 +65,11 @@ export default function AdminDashboard({ onNavigate, sites, notifications }: Adm
     setUserError('');
 
     try {
-      const response = await fetch('/api/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newUser),
+      await createUser({ 
+        ...newUser, 
+        updatedAt: new Date().toISOString(), 
+        role: newUser.role as "USER" | "SECTOR_MANAGER" | "ADMIN" 
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Erreur lors de la création de l\'utilisateur');
-      }
-
       setShowUserModal(false);
       setNewUser({
         name: '',
