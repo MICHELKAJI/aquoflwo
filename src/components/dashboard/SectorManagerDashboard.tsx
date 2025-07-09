@@ -6,6 +6,8 @@ import type { Site, User, Notification, Alert } from '../../types';
 import { generateWaterLevelData } from '../../utils/mockData';
 import { useAlerts } from '../../hooks/useAlerts';
 import AlertList from '../alerts/AlertList';
+import { createHousehold } from '../../services/householdService';
+import { createNotification } from '../../services/notificationService';
 
 // @ts-ignore - Forcing recompilation
 interface SectorManagerDashboardProps {
@@ -59,21 +61,11 @@ export default function SectorManagerDashboard({ currentUser, site, notification
   const handleAddHousehold = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch(`/api/households`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          ...newHousehold,
-          siteId: site.id
-        }),
+      await createHousehold({
+        ...newHousehold,
+        siteId: site.id,
+        updatedAt: new Date().toISOString()
       });
-
-      if (!response.ok) {
-        throw new Error('Erreur lors de l\'ajout du ménage');
-      }
 
       setShowAddHouseholdModal(false);
       setNewHousehold({
@@ -94,21 +86,16 @@ export default function SectorManagerDashboard({ currentUser, site, notification
   const handleAddNotification = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch(`/api/sites/${site.id}/notifications`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...newNotification,
-          siteId: site.id,
-          sentBy: currentUser.id
-        }),
+      await createNotification({
+        type: 'GENERAL',
+        message: newNotification.message,
+        status: 'PENDING',
+        siteId: site.id,
+        recipients: site.households?.map(h => h.contact) || [],
+        sentById: currentUser.id,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       });
-
-      if (!response.ok) {
-        throw new Error('Erreur lors de la création de la notification');
-      }
 
       setShowAddNotificationModal(false);
       setNewNotification({
