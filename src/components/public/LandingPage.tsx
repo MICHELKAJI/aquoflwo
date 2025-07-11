@@ -229,15 +229,15 @@ export default function LandingPage({ announcements, sites, onLogin }: LandingPa
               <div className="space-y-4">
                 <div className="flex items-center">
                   <Phone className="h-5 w-5 text-blue-600 mr-3" />
-                  <span className="text-gray-700">+33 1 23 45 67 89</span>
+                  <span className="text-gray-700">+243996578437</span>
                 </div>
                 <div className="flex items-center">
                   <Mail className="h-5 w-5 text-blue-600 mr-3" />
-                  <span className="text-gray-700">contact@aquaflow.fr</span>
+                  <span className="text-gray-700">aquaflow@gmail.com</span>
                 </div>
                 <div className="flex items-center">
                   <MapPin className="h-5 w-5 text-blue-600 mr-3" />
-                  <span className="text-gray-700">123 Avenue de l'Eau, 75000 Paris</span>
+                  <span className="text-gray-700">95200 Rue Lys Route, Congo The Democratic Republic of the, CD</span>
                 </div>
               </div>
               
@@ -258,7 +258,7 @@ export default function LandingPage({ announcements, sites, onLogin }: LandingPa
                   </div>
                   <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                     <p className="text-sm text-blue-800">
-                      <strong>24/7 Emergencies:</strong> +33 6 12 34 56 78
+                      <strong>24/7 Emergencies:</strong> +243996578437
                     </p>
                   </div>
                 </div>
@@ -337,7 +337,7 @@ export default function LandingPage({ announcements, sites, onLogin }: LandingPa
                 Your trusted partner for modern, transparent and efficient water distribution.
               </p>
               <p className="text-sm text-gray-500">
-                © 2024 AquaFlow. All rights reserved.
+                © 2025 AquaFlow. All rights reserved.
               </p>
             </div>
             
@@ -354,10 +354,10 @@ export default function LandingPage({ announcements, sites, onLogin }: LandingPa
             <div>
               <h4 className="text-lg font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-gray-400">
-                <li>+33 1 23 45 67 89</li>
-                <li>contact@aquaflow.fr</li>
-                <li>123 Avenue de l'Eau</li>
-                <li>75000 Paris</li>
+                <li>+243996578437</li>
+                <li>aquaflow@gmail.com</li>
+                <li>95200 Rue Lys Route </li>
+                <li>Congo The Democratic Republic of the, CD</li>
               </ul>
             </div>
           </div>

@@ -226,9 +226,7 @@ function App() {
       case 'notifications':
         return (
           <NotificationsCenter 
-            notifications={notifications}
             sites={sites}
-            onSendNotification={handleSendNotification}
             onShowDashboard={() => setCurrentPage('dashboard')}
           />
         );
