@@ -9,13 +9,15 @@ interface SitesManagementProps {
   onCreateSite: (site: Omit<Site, 'id' | 'createdAt'>) => void;
   onUpdateSite: (id: string, site: Partial<Site>) => void;
   onDeleteSite: (id: string) => void;
+  onBack?: () => void;
 }
 
 export default function SitesManagement({ 
   sites, 
   onCreateSite, 
   onUpdateSite, 
-  onDeleteSite 
+  onDeleteSite, 
+  onBack 
 }: SitesManagementProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingSite, setEditingSite] = useState<Site | null>(null);
@@ -39,8 +41,16 @@ export default function SitesManagement({
     fetchSectorManagers();
   }, []);
 
-  const handleCreateSite = (siteData: Omit<Site, 'id' | 'createdAt'>) => {
-    onCreateSite(siteData);
+  const handleCreateSite = (siteData: {
+    name: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    reservoirCapacity: number;
+    currentLevel: number;
+    sectorManagerId: string;
+  }) => {
+    onCreateSite({ ...siteData, updatedAt: new Date() });
     setShowCreateForm(false);
   };
 
@@ -53,6 +63,14 @@ export default function SitesManagement({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="mb-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        >
+          ← Retour
+        </button>
+      )}
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Site Management</h1>
         <button
@@ -101,7 +119,7 @@ export default function SitesManagement({
                   <div className="sm:flex">
                     <p className="flex items-center text-sm text-gray-500">
                       <MapPin className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" />
-                      {site.location}
+                      {site.address}
                     </p>
                   </div>
                   <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">

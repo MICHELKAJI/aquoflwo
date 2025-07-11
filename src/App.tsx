@@ -220,6 +220,7 @@ function App() {
             onCreateSite={handleCreateSite}
             onUpdateSite={handleUpdateSite}
             onDeleteSite={handleDeleteSite}
+            onBack={() => setCurrentPage('dashboard')}
           />
         );
       

@@ -192,6 +192,33 @@ export default function LandingPage({ announcements, onLogin }: LandingPageProps
         </div>
       </div>
 
+      {/* Key Services Section */}
+      <div className="py-16 bg-white border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900">Our Key Services</h2>
+            <p className="mt-4 text-lg text-gray-600">Discover what makes AquaFlow unique and essential for your community.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-blue-50 rounded-lg p-8 shadow-sm flex flex-col items-center">
+              <Droplets className="h-10 w-10 text-blue-600 mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Smart Water Monitoring</h3>
+              <p className="text-gray-700 text-center">Our IoT sensors provide real-time data on water levels, ensuring optimal distribution and early detection of issues.</p>
+            </div>
+            <div className="bg-green-50 rounded-lg p-8 shadow-sm flex flex-col items-center">
+              <Phone className="h-10 w-10 text-green-600 mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Automated SMS Alerts</h3>
+              <p className="text-gray-700 text-center">Stay informed with instant SMS notifications for refills, maintenance, and emergencies, directly on your phone.</p>
+            </div>
+            <div className="bg-yellow-50 rounded-lg p-8 shadow-sm flex flex-col items-center">
+              <Users className="h-10 w-10 text-yellow-600 mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Community Engagement</h3>
+              <p className="text-gray-700 text-center">We empower local managers and households to participate in water management, fostering transparency and trust.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Services Section */}
       <div className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
