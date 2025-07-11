@@ -340,8 +340,94 @@ export default function LandingPage({ announcements, onLogin }: LandingPageProps
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      {/* Testimonials Section */}
+      <div className="py-16 bg-white border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900">What Our Clients Say</h2>
+            <p className="mt-4 text-lg text-gray-600">Real feedback from our community</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-gray-50 rounded-lg p-6 shadow-sm flex flex-col items-center">
+              <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Client" className="w-16 h-16 rounded-full mb-4" />
+              <p className="text-gray-700 italic mb-2">“AquaFlow a transformé la gestion de l’eau dans notre quartier. Service rapide et fiable !”</p>
+              <span className="text-sm font-semibold text-blue-700">Jean K., Kinshasa</span>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-6 shadow-sm flex flex-col items-center">
+              <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Client" className="w-16 h-16 rounded-full mb-4" />
+              <p className="text-gray-700 italic mb-2">“Les alertes SMS sont très pratiques, on est toujours informé en cas de coupure ou de maintenance.”</p>
+              <span className="text-sm font-semibold text-blue-700">Fatou M., Goma</span>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-6 shadow-sm flex flex-col items-center">
+              <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Client" className="w-16 h-16 rounded-full mb-4" />
+              <p className="text-gray-700 italic mb-2">“L’équipe est à l’écoute et très professionnelle. Je recommande AquaFlow à tous !”</p>
+              <span className="text-sm font-semibold text-blue-700">Patrick N., Bukavu</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Partners Section */}
+      <div className="py-16 bg-gray-50 border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900">Our Partners</h2>
+            <p className="mt-4 text-lg text-gray-600">We work with trusted organizations</p>
+          </div>
+          <div className="flex flex-wrap justify-center items-center gap-8">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Unicef_logo.png" alt="UNICEF" className="h-12" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/World_Bank_logo.png" alt="World Bank" className="h-10" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2e/Logo_AFD.png" alt="AFD" className="h-10" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Logo_Red_Cross.svg" alt="Red Cross" className="h-10" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Logo_GIZ.svg" alt="GIZ" className="h-10" />
+          </div>
+        </div>
+      </div>
+
+      {/* FAQ Section */}
+      <div className="py-16 bg-white border-t border-gray-100">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900">Frequently Asked Questions</h2>
+            <p className="mt-4 text-lg text-gray-600">Find answers to common questions</p>
+          </div>
+          <div className="space-y-6">
+            <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
+              <h4 className="font-semibold text-blue-700 mb-2">Comment puis-je m’abonner à AquaFlow ?</h4>
+              <p className="text-gray-700">Contactez-nous via le formulaire ou par téléphone. Notre équipe vous guidera dans les démarches d’abonnement.</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
+              <h4 className="font-semibold text-blue-700 mb-2">Comment recevoir les alertes SMS ?</h4>
+              <p className="text-gray-700">Dès que votre ménage est enregistré, vous recevrez automatiquement les notifications importantes sur votre téléphone.</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
+              <h4 className="font-semibold text-blue-700 mb-2">Que faire en cas de coupure d’eau ?</h4>
+              <p className="text-gray-700">Consultez la section “Ongoing Alerts” ou contactez notre support pour plus d’informations et d’assistance.</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
+              <h4 className="font-semibold text-blue-700 mb-2">Puis-je suivre la consommation de mon secteur ?</h4>
+              <p className="text-gray-700">Oui, les gestionnaires de secteur ont accès à des tableaux de bord détaillés pour suivre les niveaux d’eau et la consommation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Final Call to Action */}
+      <div className="py-16 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">Ready to join AquaFlow ?</h2>
+          <p className="text-lg text-blue-100 mb-8">Contact our team or create your professional account to benefit from a modern, reliable and transparent water distribution service.</p>
+          <button
+            onClick={onLogin}
+            className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-3 rounded-lg font-semibold transition-colors"
+          >
+            Professional Access
+          </button>
+        </div>
+      </div>
+
+      {/* Footer enrichi */}
+      <footer className="bg-gray-900 text-white py-12 border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-2">
@@ -356,7 +442,6 @@ export default function LandingPage({ announcements, onLogin }: LandingPageProps
                 © 2025 AquaFlow. All rights reserved.
               </p>
             </div>
-            
             <div>
               <h4 className="text-lg font-semibold mb-4">Services</h4>
               <ul className="space-y-2 text-gray-400">
@@ -364,9 +449,10 @@ export default function LandingPage({ announcements, onLogin }: LandingPageProps
                 <li>Real-time monitoring</li>
                 <li>Preventive maintenance</li>
                 <li>Technical support</li>
+                <li>Client testimonials</li>
+                <li>FAQ</li>
               </ul>
             </div>
-            
             <div>
               <h4 className="text-lg font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-gray-400">
@@ -375,6 +461,11 @@ export default function LandingPage({ announcements, onLogin }: LandingPageProps
                 <li>95200 Rue Lys Route </li>
                 <li>Congo The Democratic Republic of the, CD</li>
               </ul>
+              <div className="mt-6">
+                <a href="#" className="text-blue-400 hover:underline text-sm">Privacy Policy</a>
+                <span className="mx-2 text-gray-500">|</span>
+                <a href="#" className="text-blue-400 hover:underline text-sm">Terms of Service</a>
+              </div>
             </div>
           </div>
         </div>
