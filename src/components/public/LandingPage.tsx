@@ -1,18 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Droplets, MapPin, Phone, Mail, AlertCircle, Newspaper, Calendar, Users } from 'lucide-react';
-import { Announcement, Site } from '../../types';
+import { Announcement, Site, Household } from '../../types';
+import { getAllSites } from '../../services/siteService';
+import { getAllHouseholds } from '../../services/householdService';
 
 interface LandingPageProps {
   announcements: Announcement[];
-  sites: Site[];
   onLogin: () => void;
 }
 
-export default function LandingPage({ announcements, sites, onLogin }: LandingPageProps) {
+export default function LandingPage({ announcements, onLogin }: LandingPageProps) {
+  const [sites, setSites] = useState<Site[]>([]);
+  const [households, setHouseholds] = useState<Household[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const sitesData = await getAllSites();
+      setSites(sitesData);
+      const householdsData = await getAllHouseholds();
+      setHouseholds(householdsData);
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
+
   const publishedAnnouncements = announcements.filter(a => a.isPublished);
-  const criticalSites = sites.filter(site => 
-    (site.currentLevel / site.reservoirCapacity) < 0.3
-  );
+  const criticalSites = sites.filter(site => (site.currentLevel / site.reservoirCapacity) < 0.3);
+
+  // Calculs pour la zone d'impact
+  const totalSites = sites.length;
+  const totalHouseholds = households.length;
+  const averageLevel = sites.length > 0 ? Math.round(sites.reduce((sum, site) => sum + (site.currentLevel / site.reservoirCapacity), 0) / sites.length * 100) : 0;
 
   return (
     <div className="bg-white">
@@ -79,7 +99,7 @@ export default function LandingPage({ announcements, sites, onLogin }: LandingPa
               <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <MapPin className="h-8 w-8 text-blue-600" />
               </div>
-              <div className="text-3xl font-bold text-gray-900">{sites.length}</div>
+              <div className="text-3xl font-bold text-gray-900">{loading ? '-' : totalSites}</div>
               <div className="text-sm text-gray-600">Distribution Sites</div>
             </div>
             
@@ -87,9 +107,7 @@ export default function LandingPage({ announcements, sites, onLogin }: LandingPa
               <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Users className="h-8 w-8 text-green-600" />
               </div>
-              <div className="text-3xl font-bold text-gray-900">
-                {sites.reduce((sum, site) => sum + (site.households?.length || 0), 0)}
-              </div>
+              <div className="text-3xl font-bold text-gray-900">{loading ? '-' : totalHouseholds}</div>
               <div className="text-sm text-gray-600">Served Households</div>
             </div>
             
@@ -97,9 +115,7 @@ export default function LandingPage({ announcements, sites, onLogin }: LandingPa
               <div className="bg-yellow-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Droplets className="h-8 w-8 text-yellow-600" />
               </div>
-              <div className="text-3xl font-bold text-gray-900">
-                {Math.round(sites.reduce((sum, site) => sum + (site.currentLevel / site.reservoirCapacity), 0) / sites.length * 100)}%
-              </div>
+              <div className="text-3xl font-bold text-gray-900">{loading ? '-' : `${averageLevel}%`}</div>
               <div className="text-sm text-gray-600">Average Reservoir Level</div>
             </div>
             
@@ -286,7 +302,7 @@ export default function LandingPage({ announcements, sites, onLogin }: LandingPa
                   <input
                     type="email"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="votre@email.fr"
+                    placeholder="votre@email.cd"
                   />
                 </div>
                 
@@ -297,7 +313,7 @@ export default function LandingPage({ announcements, sites, onLogin }: LandingPa
                   <input
                     type="tel"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="+33 1 23 45 67 89"
+                    placeholder="+243 970706513"
                   />
                 </div>
                 
