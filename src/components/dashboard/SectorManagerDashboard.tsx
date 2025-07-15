@@ -178,16 +178,16 @@ export default function SectorManagerDashboard({ currentUser, site, notification
       {/* Contenu selon l'onglet actif */}
       {activeTab === 'dashboard' && (
         <div>
-          {/* Statistiques principales */}
+          {/* Main stats cards in English */}
           <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             <StatCard
-              title="Capacité du réservoir"
+              title="Reservoir Capacity"
               value={`${site.reservoirCapacity.toLocaleString()} L`}
               icon={MapPin}
               color="blue"
             />
             <StatCard
-              title="Niveau actuel"
+              title="Current Level"
               value={`${site.currentLevel.toLocaleString()} L`}
               icon={Droplets}
               color={levelPercentage >= 60 ? 'green' : levelPercentage >= 30 ? 'yellow' : 'red'}
@@ -199,22 +199,22 @@ export default function SectorManagerDashboard({ currentUser, site, notification
               color={levelPercentage >= 60 ? 'green' : levelPercentage >= 30 ? 'yellow' : 'red'}
             />
             <StatCard
-              title="Ménages du secteur"
+              title="Sector Households"
               value={`${(site.households ?? []).length}`}
               icon={Users}
               color="blue"
             />
           </div>
-          {/* Infos importantes du site */}
+          {/* Site details in English */}
           <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-lg shadow-sm border p-6 flex flex-col justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-blue-900 mb-2">{site.name}</h1>
-                <p className="text-sm text-gray-600 mb-1">Adresse : <span className="font-medium text-gray-900">{site.address}</span></p>
-                <p className="text-sm text-gray-600 mb-1">Responsable : <span className="font-medium text-gray-900">{currentUser.name}</span></p>
-                <p className="text-sm text-gray-600 mb-1">Capacité : <span className="font-medium text-gray-900">{site.reservoirCapacity.toLocaleString()} L</span></p>
-                <p className="text-sm text-gray-600 mb-1">Niveau actuel : <span className="font-medium text-gray-900">{site.currentLevel.toLocaleString()} L</span></p>
-                <p className="text-sm text-gray-600 mb-1">Dernier remplissage : <span className="font-medium text-gray-900">{new Date(site.createdAt).toLocaleDateString('fr-FR')}</span></p>
+                <p className="text-sm text-gray-600 mb-1">Address: <span className="font-medium text-gray-900">{site.address}</span></p>
+                <p className="text-sm text-gray-600 mb-1">Manager: <span className="font-medium text-gray-900">{currentUser.name}</span></p>
+                <p className="text-sm text-gray-600 mb-1">Capacity: <span className="font-medium text-gray-900">{site.reservoirCapacity.toLocaleString()} L</span></p>
+                <p className="text-sm text-gray-600 mb-1">Current level: <span className="font-medium text-gray-900">{site.currentLevel.toLocaleString()} L</span></p>
+                <p className="text-sm text-gray-600 mb-1">Last refill: <span className="font-medium text-gray-900">{new Date(site.createdAt).toLocaleDateString('en-US')}</span></p>
               </div>
               <div className="mt-4">
                 <div className="w-full bg-gray-200 rounded-full h-3">
