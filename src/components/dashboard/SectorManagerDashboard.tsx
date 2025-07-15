@@ -178,6 +178,33 @@ export default function SectorManagerDashboard({ currentUser, site, notification
       {/* Contenu selon l'onglet actif */}
       {activeTab === 'dashboard' && (
         <div>
+          {/* Statistiques principales */}
+          <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            <StatCard
+              title="Capacité du réservoir"
+              value={`${site.reservoirCapacity.toLocaleString()} L`}
+              icon={MapPin}
+              color="blue"
+            />
+            <StatCard
+              title="Niveau actuel"
+              value={`${site.currentLevel.toLocaleString()} L`}
+              icon={Droplets}
+              color={levelPercentage >= 60 ? 'green' : levelPercentage >= 30 ? 'yellow' : 'red'}
+            />
+            <StatCard
+              title="Estimation (%)"
+              value={`${levelPercentage}%`}
+              icon={Droplets}
+              color={levelPercentage >= 60 ? 'green' : levelPercentage >= 30 ? 'yellow' : 'red'}
+            />
+            <StatCard
+              title="Ménages du secteur"
+              value={`${(site.households ?? []).length}`}
+              icon={Users}
+              color="blue"
+            />
+          </div>
           {/* Infos importantes du site */}
           <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-lg shadow-sm border p-6 flex flex-col justify-between">
@@ -216,7 +243,7 @@ export default function SectorManagerDashboard({ currentUser, site, notification
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <h2 className="text-xl font-semibold text-blue-900 mb-4">Ménages du secteur</h2>
           <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
-            {site.households?.length > 0 ? site.households.map(household => (
+            {(site.households ?? []).length > 0 ? (site.households ?? []).map(household => (
               <div key={household.id} className="p-4 hover:bg-gray-50">
                 <div className="flex items-center justify-between">
                   <div>
