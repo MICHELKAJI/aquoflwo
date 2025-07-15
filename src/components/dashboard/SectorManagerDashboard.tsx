@@ -241,7 +241,16 @@ export default function SectorManagerDashboard({ currentUser, site, notification
       )}
       {activeTab === 'households' && (
         <div className="bg-white rounded-lg shadow-sm border p-6">
-          <h2 className="text-xl font-semibold text-blue-900 mb-4">Ménages du secteur</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-blue-900">Sector Households</h2>
+            <button
+              onClick={() => setShowAddHouseholdModal(true)}
+              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Household
+            </button>
+          </div>
           <div className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
             {(site.households ?? []).length > 0 ? (site.households ?? []).map(household => (
               <div key={household.id} className="p-4 hover:bg-gray-50">
@@ -256,7 +265,7 @@ export default function SectorManagerDashboard({ currentUser, site, notification
                 </div>
               </div>
             )) : (
-              <div className="p-8 text-center text-gray-500">Aucun ménage enregistré.</div>
+              <div className="p-8 text-center text-gray-500">No household registered.</div>
             )}
           </div>
         </div>
