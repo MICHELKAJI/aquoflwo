@@ -28,8 +28,15 @@ export default function Header({ currentUser, onNavigate, currentPage }: HeaderP
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
-              <Droplets className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">AquaFlow</span>
+              <button
+                type="button"
+                onClick={() => onNavigate('public')}
+                className="flex items-center focus:outline-none"
+                aria-label="Aller à l'accueil"
+              >
+                <Droplets className="h-8 w-8 text-blue-600" />
+                <span className="ml-2 text-xl font-bold text-gray-900">AquaFlow</span>
+              </button>
             </div>
             
             {currentUser && (
