@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Household } from '../types';
 
 // URL de l'API - en production, utilisez l'URL Railway
-const API_URL = 'https://backendaquo-production.up.railway.app/api/households';
+const API_URL = 'http://localhost:3001/api'; // Remplacez par l'URL de votre API en production
 
 export const getAllHouseholds = async (): Promise<Household[]> => {
   const token = localStorage.getItem('token');
@@ -22,7 +22,7 @@ export const getHouseholdById = async (id: string): Promise<Household> => {
 
 export const createHousehold = async (householdData: Omit<Household, 'id' | 'createdAt'>): Promise<Household> => {
   const token = localStorage.getItem('token');
-  const response = await axios.post(API_URL, householdData, {
+  const response = await axios.post(`${API_URL}/household`, householdData, {
     headers: { 
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json'

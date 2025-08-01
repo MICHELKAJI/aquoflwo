@@ -4,6 +4,8 @@ import LandingPage from './components/public/LandingPage';
 import LoginForm from './components/auth/LoginForm';
 import AdminDashboard from './components/dashboard/AdminDashboard';
 import SectorManagerDashboard from './components/dashboard/SectorManagerDashboard';
+import TechnicianDashboard from './components/dashboard/TechnicianDashboard';
+import SettingsDashboard from './components/settings/SettingsDashboard';
 import SitesManagement from './components/sites/SitesManagement';
 import NotificationsCenter from './components/notifications/NotificationsCenter';
 import { User, Site, Notification, Announcement } from './types';
@@ -12,7 +14,7 @@ import { getAllSites, createSite, updateSite } from './services/siteService';
 import { getAllNotifications } from './services/notificationService';
 import { getAllAnnouncements } from './services/announcementService';
 
-type Page = 'public' | 'login' | 'dashboard' | 'sites' | 'notifications';
+type Page = 'public' | 'login' | 'dashboard' | 'sites' | 'notifications' | 'settings';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('public');
@@ -210,6 +212,12 @@ function App() {
               />
             );
           }
+        } else if (currentUser.role === 'TECHNICIAN') {
+          return (
+            <TechnicianDashboard 
+              currentUser={currentUser}
+            />
+          );
         }
         return <div>Tableau de bord non disponible</div>;
       
@@ -229,6 +237,13 @@ function App() {
           <NotificationsCenter 
             sites={sites}
             onShowDashboard={() => setCurrentPage('dashboard')}
+          />
+        );
+      
+      case 'settings':
+        return (
+          <SettingsDashboard 
+            currentUser={currentUser}
           />
         );
       

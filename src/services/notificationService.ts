@@ -1,71 +1,197 @@
-import axios from 'axios';
-import { Notification } from '../types';
+import api from './api';
 
-// URL de l'API - en production, utilisez l'URL Railway
-const API_URL = 'https://backendaquo-production.up.railway.app/api';
+export interface TechnicalAlert {
+  id: string;
+  sensorId: string;
+  siteId: string;
+  type: 'BATTERY_LOW' | 'SIGNAL_WEAK' | 'ACCURACY_LOW' | 'SENSOR_FAILED' | 'MAINTENANCE_NEEDED' | 'CALIBRATION_DUE';
+  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  message: string;
+  details: {
+    sensorName: string;
+    siteName: string;
+    currentValue: number;
+    threshold: number;
+    unit: string;
+  };
+  isRead: boolean;
+  createdAt: Date;
+  technicianId?: string;
+}
 
-// Créer une instance axios avec la configuration par défaut
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
+export interface NotificationPreferences {
+  userId: string;
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+  pushNotifications: boolean;
+  technicalAlerts: boolean;
+  maintenanceReminders: boolean;
+  criticalAlerts: boolean;
+}
 
-// Intercepteur pour ajouter le token à chaque requête
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-export const getAllNotifications = async (): Promise<Notification[]> => {
+// Récupérer toutes les notifications
+export const getAllNotifications = async (): Promise<any[]> => {
   try {
     const response = await api.get('/notifications');
     return response.data;
-  } catch (error: any) {
+  } catch (error) {
     console.error('Erreur lors de la récupération des notifications:', error);
-    throw new Error(error.response?.data?.message || 'Erreur lors de la récupération des notifications');
+    throw error;
   }
 };
 
-export const getNotificationById = async (id: string): Promise<Notification> => {
+// Créer une nouvelle notification
+export const createNotification = async (notification: any): Promise<any> => {
   try {
-    const response = await api.get(`/${id}`);
+    const response = await api.post('/notifications', notification);
     return response.data;
-  } catch (error: any) {
-    console.error('Erreur lors de la récupération de la notification:', error);
-    throw new Error(error.response?.data?.message || 'Erreur lors de la récupération de la notification');
-  }
-};
-
-export const createNotification = async (notificationData: Omit<Notification, 'id' | 'sentAt'>): Promise<Notification> => {
-  try {
-    const response = await api.post('/notifications', notificationData);
-    return response.data;
-  } catch (error: any) {
+  } catch (error) {
     console.error('Erreur lors de la création de la notification:', error);
-    throw new Error(error.response?.data?.message || 'Erreur lors de la création de la notification');
+    throw error;
   }
 };
 
-export const updateNotificationStatus = async (id: string, status: 'sent' | 'failed' | 'pending'): Promise<Notification> => {
+// Envoyer une alerte technique aux techniciens du site
+export const sendTechnicalAlert = async (alert: Omit<TechnicalAlert, 'id' | 'createdAt' | 'isRead'>): Promise<TechnicalAlert> => {
   try {
-    const response = await api.patch(`/${id}`, { status });
+    const response = await api.post('/notifications/technical-alerts', alert);
     return response.data;
-  } catch (error: any) {
-    console.error('Erreur lors de la mise à jour de la notification:', error);
-    throw new Error(error.response?.data?.message || 'Erreur lors de la mise à jour de la notification');
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi de l\'alerte technique:', error);
+    throw error;
   }
 };
 
-export const deleteNotification = async (id: string): Promise<void> => {
+// Récupérer les alertes techniques pour un technicien
+export const getTechnicalAlerts = async (technicianId: string): Promise<TechnicalAlert[]> => {
   try {
-    await api.delete(`/${id}`);
-  } catch (error: any) {
-    console.error('Erreur lors de la suppression de la notification:', error);
-    throw new Error(error.response?.data?.message || 'Erreur lors de la suppression de la notification');
+    const response = await api.get(`/notifications/technical-alerts/${technicianId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des alertes techniques:', error);
+    throw error;
+  }
+};
+
+// Récupérer les alertes liées aux sites du technicien et les alertes générées par les capteurs
+export const getTechnicianSiteAlerts = async (technicianId: string): Promise<TechnicalAlert[]> => {
+  try {
+    const response = await api.get(`/notifications/technician-site-alerts/${technicianId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des alertes des sites du technicien:', error);
+    throw error;
+  }
+};
+
+// Marquer une alerte comme lue
+export const markAlertAsRead = async (alertId: string): Promise<void> => {
+  try {
+    await api.put(`/notifications/technical-alerts/${alertId}/read`);
+  } catch (error) {
+    console.error('Erreur lors du marquage de l\'alerte:', error);
+    throw error;
+  }
+};
+
+// Marquer une alerte de site technicien comme lue
+export const markTechnicianSiteAlertAsRead = async (alertId: string): Promise<void> => {
+  try {
+    await api.put(`/notifications/technician-site-alerts/${alertId}/read`);
+  } catch (error) {
+    console.error('Erreur lors du marquage de l\'alerte de site technicien:', error);
+    throw error;
+  }
+};
+
+// Récupérer les préférences de notification d'un utilisateur
+export const getNotificationPreferences = async (userId: string): Promise<NotificationPreferences> => {
+  try {
+    const response = await api.get(`/notifications/preferences/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des préférences:', error);
+    throw error;
+  }
+};
+
+// Mettre à jour les préférences de notification
+export const updateNotificationPreferences = async (userId: string, preferences: Partial<NotificationPreferences>): Promise<NotificationPreferences> => {
+  try {
+    const response = await api.put(`/notifications/preferences/${userId}`, preferences);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour des préférences:', error);
+    throw error;
+  }
+};
+
+// Envoyer une notification par email
+export const sendEmailNotification = async (data: {
+  to: string;
+  subject: string;
+  message: string;
+  template?: string;
+}): Promise<void> => {
+  try {
+    await api.post('/notifications/email', data);
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi de l\'email:', error);
+    throw error;
+  }
+};
+
+// Envoyer une notification SMS
+export const sendSMSNotification = async (data: {
+  to: string;
+  message: string;
+}): Promise<void> => {
+  try {
+    await api.post('/notifications/sms', data);
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi du SMS:', error);
+    throw error;
+  }
+};
+
+// Générer un message d'alerte technique
+export const generateTechnicalAlertMessage = (sensor: any, alertType: TechnicalAlert['type']): string => {
+  const siteName = sensor.site?.name || 'Site inconnu';
+  
+  switch (alertType) {
+    case 'BATTERY_LOW':
+      return `Alerte: Batterie faible sur le capteur ${sensor.name} (${siteName}). Niveau: ${sensor.batteryLevel}%`;
+    case 'SIGNAL_WEAK':
+      return `Alerte: Signal faible sur le capteur ${sensor.name} (${siteName}). Force: ${sensor.signalStrength}%`;
+    case 'ACCURACY_LOW':
+      return `Alerte: Précision faible sur le capteur ${sensor.name} (${siteName}). Précision: ${sensor.accuracy}%`;
+    case 'SENSOR_FAILED':
+      return `URGENT: Capteur ${sensor.name} (${siteName}) en échec. Intervention requise immédiatement.`;
+    case 'MAINTENANCE_NEEDED':
+      return `Maintenance requise sur le capteur ${sensor.name} (${siteName}). Statut: ${sensor.status}`;
+    case 'CALIBRATION_DUE':
+      return `Calibration due pour le capteur ${sensor.name} (${siteName}). Dernière calibration: ${sensor.lastCalibrationDate ? new Date(sensor.lastCalibrationDate).toLocaleDateString('fr-FR') : 'Jamais'}`;
+    default:
+      return `Alerte technique sur le capteur ${sensor.name} (${siteName})`;
+  }
+};
+
+// Déterminer la sévérité d'une alerte
+export const determineAlertSeverity = (sensor: any, alertType: TechnicalAlert['type']): TechnicalAlert['severity'] => {
+  switch (alertType) {
+    case 'SENSOR_FAILED':
+      return 'CRITICAL';
+    case 'BATTERY_LOW':
+      return sensor.batteryLevel < 20 ? 'HIGH' : 'MEDIUM';
+    case 'SIGNAL_WEAK':
+      return sensor.signalStrength < 30 ? 'HIGH' : 'MEDIUM';
+    case 'ACCURACY_LOW':
+      return sensor.accuracy < 70 ? 'HIGH' : 'MEDIUM';
+    case 'MAINTENANCE_NEEDED':
+      return 'MEDIUM';
+    case 'CALIBRATION_DUE':
+      return 'LOW';
+    default:
+      return 'MEDIUM';
   }
 }; 

@@ -13,9 +13,10 @@ interface HeaderProps {
 export default function Header({ currentUser, onNavigate, currentPage }: HeaderProps) {
   const navigation = [
     { id: 'public', label: 'Accueil Public', roles: ['admin', 'sector_manager'] },
-    { id: 'dashboard', label: 'Tableau de Bord', roles: ['admin', 'sector_manager'] },
+    { id: 'dashboard', label: 'Tableau de Bord', roles: ['admin', 'sector_manager', 'technician'] },
     { id: 'sites', label: 'Sites & Secteurs', roles: ['admin'] },
     { id: 'notifications', label: 'Notifications', roles: ['admin', 'sector_manager'] },
+    { id: 'settings', label: 'Paramètres', roles: ['admin'] },
   ];
 
   const visibleNavItems = navigation.filter(item => 
@@ -75,9 +76,15 @@ export default function Header({ currentUser, onNavigate, currentPage }: HeaderP
                 </div>
                 
                 <div className="flex space-x-2">
-                  <button className="p-1 rounded-full text-gray-400 hover:text-gray-500">
-                    <Settings className="h-5 w-5" />
-                  </button>
+                  {currentUser.role === 'ADMIN' && (
+                    <button 
+                      onClick={() => onNavigate('settings')}
+                      className="p-1 rounded-full text-gray-400 hover:text-gray-500"
+                      title="Paramètres"
+                    >
+                      <Settings className="h-5 w-5" />
+                    </button>
+                  )}
                   <button 
                     onClick={() => onNavigate('public')}
                     className="p-1 rounded-full text-gray-400 hover:text-gray-500"

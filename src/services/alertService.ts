@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Alert } from '../types';
 
 // URL de l'API - en production, utilisez l'URL Railway
-const API_URL = 'https://backendaquo-production.up.railway.app/api';
+const API_URL = 'http://localhost:3001/api'; // Remplacez par l'URL de votre API en production
 
 // Créer une instance axios avec la configuration par défaut
 const api = axios.create({

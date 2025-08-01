@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Droplets, Users, Phone, AlertTriangle, MapPin, Plus, Bell, Filter } from 'lucide-react';
+import { Droplets, Users, Phone, AlertTriangle, MapPin, Plus, Bell, Filter, FileText } from 'lucide-react';
 import StatCard from '../common/StatCard';
 import WaterLevelChart from '../common/WaterLevelChart';
 import type { Site, User, Notification, Alert } from '../../types';
@@ -8,6 +8,7 @@ import { useAlerts } from '../../hooks/useAlerts';
 import AlertList from '../alerts/AlertList';
 import { createHousehold } from '../../services/householdService';
 import { createNotification } from '../../services/notificationService';
+import RefillReportsList from '../refill/RefillReportsList';
 
 // @ts-ignore - Forcing recompilation
 interface SectorManagerDashboardProps {
@@ -24,7 +25,9 @@ export default function SectorManagerDashboard({ currentUser, site, notification
     contact: '',
     address: '',
     siteId: '',
-    isActive: true
+    isActive: true,
+    memberCount: 1,
+    monthlyConsumption: 0
   });
   const [newNotification, setNewNotification] = useState({
     message: '',
@@ -36,7 +39,7 @@ export default function SectorManagerDashboard({ currentUser, site, notification
     status: 'all',
     dateRange: 'all'
   });
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'households' | 'autoAlerts' | 'siteAlerts'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'households' | 'autoAlerts' | 'siteAlerts' | 'refillReports'>('dashboard');
 
   const { alerts, loading: alertsLoading, updateAlert } = useAlerts();
   const [siteAlerts, setSiteAlerts] = useState<Alert[]>([]);
@@ -65,6 +68,8 @@ export default function SectorManagerDashboard({ currentUser, site, notification
       await createHousehold({
         ...newHousehold,
         siteId: site.id,
+        memberCount: newHousehold.memberCount,
+        monthlyConsumption: newHousehold.monthlyConsumption,
         updatedAt: new Date().toISOString()
       });
 
@@ -74,7 +79,9 @@ export default function SectorManagerDashboard({ currentUser, site, notification
         contact: '',
         address: '',
         siteId: '',
-        isActive: true
+        isActive: true,
+        memberCount: 1,
+        monthlyConsumption: 0
       });
       // Rafraîchir la liste des ménages
       window.location.reload();
@@ -145,37 +152,73 @@ export default function SectorManagerDashboard({ currentUser, site, notification
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Menu horizontal (onglets) */}
-      <div className="mb-8 border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-          <button
-            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm focus:outline-none transition-all ${activeTab === 'dashboard' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-blue-700 hover:border-blue-300'}`}
-            onClick={() => setActiveTab('dashboard')}
-          >
-            Dashboard
-          </button>
-          <button
-            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm focus:outline-none transition-all ${activeTab === 'households' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-blue-700 hover:border-blue-300'}`}
-            onClick={() => setActiveTab('households')}
-          >
-            Sector Households
-          </button>
-          <button
-            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm focus:outline-none transition-all ${activeTab === 'autoAlerts' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-blue-700 hover:border-blue-300'}`}
-            onClick={() => setActiveTab('autoAlerts')}
-          >
-            Automatic Alerts
-          </button>
-          <button
-            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm focus:outline-none transition-all ${activeTab === 'siteAlerts' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-blue-700 hover:border-blue-300'}`}
-            onClick={() => setActiveTab('siteAlerts')}
-          >
-            Site Alerts
-          </button>
-        </nav>
+      {/* Navigation Tabs */}
+      <div className="bg-white shadow rounded-lg mb-6">
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex space-x-8 px-6">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'dashboard'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Droplets className="inline h-4 w-4 mr-2" />
+              Dashboard
+            </button>
+            <button
+              onClick={() => setActiveTab('households')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'households'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Users className="inline h-4 w-4 mr-2" />
+              Households ({site.households?.filter(h => h.isActive).length || 0})
+            </button>
+            <button
+              onClick={() => setActiveTab('refillReports')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'refillReports'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <FileText className="inline h-4 w-4 mr-2" />
+              Rapports de Recharge
+            </button>
+            <button
+              onClick={() => setActiveTab('autoAlerts')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'autoAlerts'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <AlertTriangle className="inline h-4 w-4 mr-2" />
+              Auto Alerts
+            </button>
+            <button
+              onClick={() => setActiveTab('siteAlerts')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'siteAlerts'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Bell className="inline h-4 w-4 mr-2" />
+              Site Alerts ({siteAlerts.length})
+            </button>
+          </nav>
+        </div>
       </div>
-
       {/* Contenu selon l'onglet actif */}
+      {activeTab === 'refillReports' && (
+        <RefillReportsList site={site} currentUser={currentUser} />
+      )}
+
       {activeTab === 'dashboard' && (
         <div>
           {/* Main stats cards in English */}

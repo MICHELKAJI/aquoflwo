@@ -3,7 +3,7 @@ export interface User {
   name: string;
   email: string;
   phone: string;
-  role: 'USER' | 'SECTOR_MANAGER' | 'ADMIN';
+  role: 'USER' | 'SECTOR_MANAGER' | 'ADMIN' | 'TECHNICIAN';
   createdAt: string;
   updatedAt: string;
 }
@@ -33,6 +33,8 @@ export interface Household {
   address: string;
   isActive: boolean;
   siteId: string;
+  memberCount: number;
+  monthlyConsumption: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -96,4 +98,117 @@ export interface Alert {
   actionTakenAt?: Date;
   site?: Site;
   createdBy?: User;
+}
+
+// Types pour les techniciens de maintenance
+export interface Sensor {
+  id: string;
+  siteId: string;
+  name: string;
+  type: 'LEVEL' | 'PRESSURE' | 'FLOW' | 'TEMPERATURE' | 'QUALITY';
+  model: string;
+  serialNumber: string;
+  installationDate: Date;
+  lastCalibrationDate?: Date;
+  nextCalibrationDate?: Date;
+  batteryLevel: number;
+  signalStrength: number;
+  status: 'ACTIVE' | 'INACTIVE' | 'MAINTENANCE' | 'FAILED';
+  accuracy: number;
+  createdAt: Date;
+  updatedAt: Date;
+  site?: Site;
+}
+
+export interface SensorConfig {
+  id: string;
+  sensorId: string;
+  parameter: string;
+  value: string | number;
+  unit: string;
+  description: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  sensor?: Sensor;
+}
+
+export interface MaintenanceReport {
+  id: string;
+  siteId: string;
+  technicianId: string;
+  title: string;
+  description: string;
+  type: 'PREVENTIVE' | 'CORRECTIVE' | 'CALIBRATION' | 'INSTALLATION';
+  status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  startDate: Date;
+  endDate?: Date;
+  actionsTaken: string;
+  partsUsed: string[];
+  cost: number;
+  notes: string;
+  createdAt: Date;
+  updatedAt: Date;
+  site?: Site;
+  technician?: User;
+}
+
+export interface SensorDiagnostic {
+  id: string;
+  sensorId: string;
+  timestamp: Date;
+  batteryLevel: number;
+  signalStrength: number;
+  accuracy: number;
+  temperature: number;
+  humidity: number;
+  errorCodes: string[];
+  performanceScore: number;
+  recommendations: string[];
+}
+
+// Types pour les rapports de recharge
+export interface RefillReport {
+  id: string;
+  siteId: string;
+  reportedById: string;
+  refillDate: Date;
+  volumeRefilled: number; // en litres
+  previousLevel: number | null; // pourcentage 0-100
+  currentLevel: number; // pourcentage 0-100
+  cost: number | null; // coût optionnel
+  supplier: string | null; // fournisseur optionnel
+  notes: string | null; // notes additionnelles
+  createdAt: Date;
+  updatedAt: Date;
+  site?: Site;
+  reportedBy?: User;
+}
+
+export interface RefillReportStats {
+  totalVolumeRefilled: number;
+  totalCost: number;
+  averageVolumePerRefill: number;
+  refillCount: number;
+  averageDailyConsumption: number;
+  costPerLiter: number;
+  period: number; // nombre de jours
+}
+
+export interface RefillReportFilters {
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface RefillReportFormData {
+  volumeRefilled: number;
+  currentLevel: number;
+  refillDate?: Date;
+  previousLevel?: number;
+  cost?: number;
+  supplier?: string;
+  notes?: string;
 }

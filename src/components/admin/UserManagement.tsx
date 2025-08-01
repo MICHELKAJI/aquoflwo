@@ -235,6 +235,7 @@ export default function UserManagement() {
               >
                 <option value="USER">User</option>
                 <option value="SECTOR_MANAGER">Sector Manager</option>
+                <option value="TECHNICIAN">Technician</option>
                 <option value="ADMIN">Administrator</option>
               </select>
             </div>
