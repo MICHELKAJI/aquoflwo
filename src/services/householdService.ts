@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Household } from '../types';
 
 // URL de l'API - en production, utilisez l'URL Railway
-const API_URL = 'http://localhost:3001/api'; // Remplacez par l'URL de votre API en production
+const API_URL = 'https://backendaquo.onrender.com/api'; // Remplacez par l'URL de votre API en production
 
 export const getAllHouseholds = async (): Promise<Household[]> => {
   const token = localStorage.getItem('token');

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // URL de l'API - en production, utilisez l'URL Railway
-const API_URL = 'http://localhost:3001/api';
+const API_URL = 'https://backendaquo.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_URL,
