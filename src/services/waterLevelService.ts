@@ -36,41 +36,52 @@ class WaterLevelService {
   }
 
   private connectWebSocket() {
-    // Utilisez votre URL de base API et remplacez http par ws
-    const wsUrl = `${window.location.origin.replace('http', 'ws')}/ws/water-levels`;
-    this.socket = new WebSocket(wsUrl);
+    // Utiliser l'URL du backend Render pour le WebSocket
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${wsProtocol}//backendaquo.onrender.com/ws/water-levels`;
+    
+    try {
+      this.socket = new WebSocket(wsUrl);
 
-    this.socket.onopen = () => {
-      console.log('WebSocket connected');
-      this.reconnectAttempts = 0;
-    };
+      this.socket.onopen = () => {
+        console.log('WebSocket connected');
+        this.reconnectAttempts = 0;
+      };
 
-    this.socket.onmessage = (event) => {
-      try {
-        const data: WaterLevelDataPoint = JSON.parse(event.data);
-        const waterLevelData: WaterLevelData = {
-          timestamp: new Date(data.timestamp),
-          level: data.distance,
-          source: data.source,
-          siteId: data.siteId
-        };
+      this.socket.onmessage = (event) => {
+        try {
+          const data: WaterLevelDataPoint = JSON.parse(event.data);
+          const waterLevelData: WaterLevelData = {
+            timestamp: new Date(data.timestamp),
+            level: data.distance,
+            source: data.source,
+            siteId: data.siteId
+          };
 
-        // Notify all callbacks for this site
-        const siteCallbacks = this.callbacks.get(data.siteId) || [];
-        siteCallbacks.forEach(callback => callback(waterLevelData));
-      } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
-      }
-    };
+          // Notify all callbacks for this site
+          const siteCallbacks = this.callbacks.get(data.siteId) || [];
+          siteCallbacks.forEach(callback => callback(waterLevelData));
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+      };
 
-    this.socket.onclose = () => {
-      console.log('WebSocket disconnected');
+      this.socket.onclose = () => {
+        console.log('WebSocket disconnected');
+        this.attemptReconnect();
+      };
+
+      this.socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        // Ne pas tenter de se reconnecter automatiquement en cas d'erreur critique
+        if (this.socket) {
+          this.socket.close();
+        }
+      };
+    } catch (error) {
+      console.error('Failed to initialize WebSocket:', error);
       this.attemptReconnect();
-    };
-
-    this.socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
+    }
   }
 
   private attemptReconnect() {

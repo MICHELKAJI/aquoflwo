@@ -4,7 +4,7 @@ import { getAllNotifications } from '../services/notificationService';
 import { User } from '../types';
 
 // URL de l'API - en production, utilisez l'URL Railway
-const API_URL = 'https://backendaquo.onrender.com';
+const API_URL = 'https://backendaquo.onrender.com/api';
 
 // Créer une instance axios avec la configuration par défaut
 const api = axios.create({
