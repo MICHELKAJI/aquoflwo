@@ -2,7 +2,7 @@ import axios from 'axios';
 import { User } from '../types';
 
 // URL de l'API - en production, utilisez l'URL Railway
-const API_URL = 'https://backendaquo.onrender.com/api';
+const API_URL = 'https://backendaquo.onrender.com';
 
 // Créer une instance axios avec la configuration par défaut
 const api = axios.create({

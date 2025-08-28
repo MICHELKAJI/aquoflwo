@@ -8,7 +8,7 @@ interface DashboardStats {
 }
 
 // Remplacer la définition de API_URL par :
-const API_URL = 'https://backendaquo.onrender.com/api';
+const API_URL = 'https://backendaquo.onrender.com';
 
 export const getDashboardStats = async (): Promise<DashboardStats> => {
   const token = localStorage.getItem('token');
