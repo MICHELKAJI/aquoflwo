@@ -10,7 +10,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://backendaquo.onrender.com',
+        target: 'https://backendaquo.onrender.com/api',
         changeOrigin: true,
         secure: false,
       }

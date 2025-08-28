@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Droplets, Users, MapPin, AlertTriangle, Plus, Home, Activity, FileText } from 'lucide-react';
 import StatCard from '../common/StatCard';
 import WaterLevelChart from '../common/WaterLevelChart';
+import WaterLevelCard from '../common/WaterLevelCard';
 import { Site, Notification, User, Sensor } from '../../types';
 import { getAllSites } from '../../services/siteService';
 import { getAllNotifications } from '../../services/notificationService';
@@ -77,11 +78,13 @@ export default function AdminDashboard({ onNavigate, sites: initialSites, notifi
   }, []);
 
   const totalCapacity = sites?.reduce((sum, site) => sum + site.reservoirCapacity, 0) || 0;
-  const totalCurrentLevel = sites?.reduce((sum, site) => sum + site.currentLevel, 0) || 0;
-  const averageLevel = totalCapacity > 0 ? Math.round((totalCurrentLevel / totalCapacity) * 100) : 0;
+  const totalHouseholds = sites.reduce(
+    (sum, site) => sum + (site.households?.length || 0), 
+    0
+  );
   
-  const criticalSites = sites?.filter(site => (site.currentLevel / site.reservoirCapacity) < 0.3) || [];
-  const totalHouseholds = sites?.reduce((sum, site) => sum + (site.households?.length || 0), 0) || 0;
+  // Get the first site for the main dashboard display
+  const mainSite = sites.length > 0 ? sites[0] : null;
   const recentNotifications = notifications?.filter(n => 
     new Date(n.sentAt).getTime() - new Date().getTime() < 24 * 60 * 60 * 1000
   ) || [];
@@ -123,35 +126,46 @@ export default function AdminDashboard({ onNavigate, sites: initialSites, notifi
   const renderOverview = () => (
     <>
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard
-          title="Active Sites"
-          value={sites?.length || 0}
-          icon={MapPin}
-          color="blue"
-          onClick={() => onNavigate('sites')}
-        />
-        <StatCard
-          title="Average Level"
-          value={`${averageLevel}%`}
-          icon={Droplets}
-          color={averageLevel >= 60 ? 'green' : averageLevel >= 30 ? 'yellow' : 'red'}
-          trend={{ value: 5, isPositive: averageLevel > 50 }}
-        />
-        <StatCard
-          title="Active Alerts"
-          value={criticalSites.length}
-          icon={AlertTriangle}
-          color={criticalSites.length === 0 ? 'green' : 'red'}
-          onClick={() => onNavigate('notifications')}
-        />
-        <StatCard
-          title="Served Households"
-          value={totalHouseholds}
-          icon={Users}
-          color="blue"
-          trend={{ value: 12, isPositive: true }}
-        />
+      <div className="grid grid-cols-1 gap-6 mb-8">
+        {mainSite && (
+          <WaterLevelCard 
+            siteId={mainSite.id}
+            capacity={mainSite.reservoirCapacity || 100}
+            title={`Niveau d'eau - ${mainSite.name}`}
+            className="w-full"
+          />
+        )}
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard
+            title="Sites Actifs"
+            value={sites?.length || 0}
+            icon={MapPin}
+            color="blue"
+            onClick={() => onNavigate('sites')}
+          />
+          <StatCard
+            title="Alertes Actives"
+            value={notifications.filter(n => !n.read).length}
+            icon={AlertTriangle}
+            color={notifications.filter(n => !n.read).length === 0 ? 'green' : 'red'}
+            onClick={() => onNavigate('notifications')}
+          />
+          <StatCard
+            title="Ménages Desservis"
+            value={totalHouseholds}
+            icon={Users}
+            color="blue"
+            onClick={() => onNavigate('households')}
+          />
+          <StatCard
+            title="Capteurs"
+            value={sensors.length}
+            icon={Activity}
+            color="blue"
+            onClick={() => onNavigate('sensors')}
+          />
+        </div>
       </div>
 
       {/* Water Level Chart */}
@@ -171,60 +185,48 @@ export default function AdminDashboard({ onNavigate, sites: initialSites, notifi
       {/* Sites Status Grid */}
       {!error && sites?.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {sites.map(site => {
-            const levelPercentage = Math.round((site.currentLevel / site.reservoirCapacity) * 100);
-            
-            return (
-              <div key={site.id} className="bg-white rounded-lg shadow-sm border">
-                <div className="p-6 border-b border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{site.name}</h3>
-                      <p className="text-sm text-gray-600">{site.address}</p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Sector Manager: {site.sectorManager?.name}
+          {sites.map(site => (
+            <div key={site.id} className="bg-white rounded-lg shadow-sm border overflow-hidden">
+              {/* Water Level Card en-tête */}
+              <div className="p-4 bg-gray-50 border-b">
+                <h3 className="text-lg font-semibold text-gray-900">{site.name}</h3>
+                <p className="text-sm text-gray-600">{site.address}</p>
+              </div>
+              
+              {/* Niveau d'eau en temps réel */}
+              <div className="p-4 border-b">
+                <WaterLevelCard 
+                  siteId={site.id}
+                  capacity={site.reservoirCapacity || 100}
+                  title="Current Water Level"
+                  className="mb-0"
+                />
+              </div>
+              
+              {/* Détails du site */}
+              <div className="p-4">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="text-gray-600">
+                    <p className="flex items-center">
+                      <Users className="h-4 w-4 mr-2 text-gray-400" />
+                      {site.households?.length || 0} households
+                    </p>
+                    {site.sectorManager?.name && (
+                      <p className="flex items-center mt-1">
+                        <span className="text-xs text-gray-500">Manager: {site.sectorManager.name}</span>
                       </p>
-                    </div>
-                    <div className="text-right">
-                      <div className={`text-2xl font-bold ${
-                        levelPercentage >= 60 ? 'text-green-600' :
-                        levelPercentage >= 30 ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                        {levelPercentage}%
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {site.currentLevel.toLocaleString()} / {site.reservoirCapacity.toLocaleString()} L
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Level Bar */}
-                  <div className="mt-4">
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div
-                        className={`h-3 rounded-full transition-all duration-300 ${
-                          levelPercentage >= 60 ? 'bg-green-500' :
-                          levelPercentage >= 30 ? 'bg-yellow-500' : 'bg-red-500'
-                        }`}
-                        style={{ width: `${levelPercentage}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="p-6">
-                  <div className="mt-4 flex items-center justify-between text-sm">
-                    <span className="text-gray-600">
-                      {site.households?.length} households served
-                    </span>
-                    <span className="text-gray-500">
-                      Last refill: {new Date(site.createdAt).toLocaleDateString('en-US')}
-                    </span>
+                    )}
+                    <button 
+                      onClick={() => onNavigate(`sites/${site.id}`)}
+                      className="text-blue-600 hover:text-blue-700 text-sm font-medium whitespace-nowrap"
+                    >
+                      View Details
+                    </button>
                   </div>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       )}
 

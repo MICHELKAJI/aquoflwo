@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Droplets, Users, Phone, AlertTriangle, MapPin, Plus, Bell, Filter, FileText } from 'lucide-react';
 import StatCard from '../common/StatCard';
 import WaterLevelChart from '../common/WaterLevelChart';
+import WaterLevelCard from '../common/WaterLevelCard';
 import type { Site, User, Notification, Alert } from '../../types';
 import { generateWaterLevelData } from '../../utils/mockData';
 import { useAlerts } from '../../hooks/useAlerts';
@@ -222,30 +223,25 @@ export default function SectorManagerDashboard({ currentUser, site, notification
       {activeTab === 'dashboard' && (
         <div>
           {/* Main stats cards in English */}
-          <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <WaterLevelCard 
+              siteId={site.id}
+              capacity={site.reservoirCapacity || 100} // Valeur par défaut si non définie
+              title="Niveau d'eau actuel"
+              className="col-span-1 sm:col-span-2 lg:col-span-2"
+            />
             <StatCard
-              title="Reservoir Capacity"
-              value={`${site.reservoirCapacity.toLocaleString()} L`}
+              title="Capacité du réservoir"
+              value={`${(site.reservoirCapacity || 100).toLocaleString()} L`} // Valeur par défaut si non définie
               icon={MapPin}
               color="blue"
             />
             <StatCard
-              title="Current Level"
-              value={`${site.currentLevel.toLocaleString()} L`}
-              icon={Droplets}
-              color={levelPercentage >= 60 ? 'green' : levelPercentage >= 30 ? 'yellow' : 'red'}
-            />
-            <StatCard
-              title="Estimation (%)"
-              value={`${levelPercentage}%`}
-              icon={Droplets}
-              color={levelPercentage >= 60 ? 'green' : levelPercentage >= 30 ? 'yellow' : 'red'}
-            />
-            <StatCard
-              title="Sector Households"
+              title="Ménages desservis"
               value={`${(site.households ?? []).length}`}
               icon={Users}
               color="blue"
+              onClick={() => setActiveTab('households')}
             />
           </div>
           {/* Site details in English */}
