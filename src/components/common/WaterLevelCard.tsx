@@ -1,6 +1,6 @@
-import { Droplets } from 'lucide-react';
-import { useEffect, useState, useCallback } from 'react';
-import { waterLevelService, WaterLevelData } from '../../services/waterLevelService';
+import { Droplets, RefreshCw } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { getLatestWaterLevel } from '../../services/waterLevelService';
 
 interface WaterLevelCardProps {
   siteId: string;
@@ -8,6 +8,7 @@ interface WaterLevelCardProps {
   title?: string;
   showPercentage?: boolean;
   className?: string;
+  refreshInterval?: number; // en millisecondes
 }
 
 export default function WaterLevelCard({ 
@@ -15,51 +16,54 @@ export default function WaterLevelCard({
   capacity, 
   title = 'Water Level',
   showPercentage = true, 
-  className = ''
+  className = '',
+  refreshInterval = 30000 // 30 secondes par défaut
 }: WaterLevelCardProps) {
   const [level, setLevel] = useState(0);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Real-time updates via WebSocket
-  const handleWaterLevelUpdate = useCallback((data: WaterLevelData) => {
-    setLevel(data.level);
-    setLastUpdate(new Date());
-    setError(null);
-  }, []);
-
-  // Initial data fetch
-  const fetchInitialData = useCallback(async () => {
+  // Fonction pour charger les données
+  const loadData = useCallback(async () => {
     try {
-      setIsLoading(true);
-      const data = await waterLevelService.getWaterLevels(siteId);
-      if (data && data.length > 0) {
-        const lastData = data[data.length - 1];
-        setLevel(lastData.level);
-        setLastUpdate(new Date(lastData.timestamp));
+      setIsRefreshing(true);
+      const data = await getLatestWaterLevel(siteId);
+      
+      if (data) {
+        setLevel(data.level);
+        setLastUpdate(new Date(data.timestamp));
       }
       setError(null);
     } catch (err) {
       console.error('Error fetching water level data:', err);
-      setError('Connection error');
+      setError('Erreur de connexion');
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
     }
   }, [siteId]);
 
-  // Subscribe to real-time updates
+  // Chargement initial
   useEffect(() => {
-    fetchInitialData();
-    
-    // Subscribe to real-time updates
-    const unsubscribe = waterLevelService.subscribe(siteId, handleWaterLevelUpdate);
-    
-    // Cleanup subscription on component unmount
-    return () => {
-      unsubscribe();
-    };
-  }, [siteId, fetchInitialData, handleWaterLevelUpdate]);
+    loadData();
+  }, [loadData]);
+
+  // Mise à jour périodique
+  useEffect(() => {
+    if (refreshInterval > 0) {
+      const intervalId = setInterval(loadData, refreshInterval);
+      return () => clearInterval(intervalId);
+    }
+  }, [loadData, refreshInterval]);
+
+  // Gestion du rafraîchissement manuel
+  const handleRefresh = () => {
+    if (!isRefreshing) {
+      loadData();
+    }
+  };
 
   const percentage = Math.min(100, Math.max(0, Math.round((level / capacity) * 100)));
   const color = percentage >= 60 ? 'bg-green-500' : percentage >= 30 ? 'bg-yellow-500' : 'bg-red-500';
@@ -78,6 +82,14 @@ export default function WaterLevelCard({
     return (
       <div className={`bg-white rounded-lg p-4 shadow-sm border border-red-200 ${className}`}>
         <div className="text-red-500 text-sm">{error}</div>
+        <button 
+          onClick={handleRefresh}
+          className="mt-2 text-xs text-blue-500 hover:text-blue-700 flex items-center"
+          disabled={isRefreshing}
+        >
+          <RefreshCw className={`h-3 w-3 mr-1 ${isRefreshing ? 'animate-spin' : ''}`} />
+          Réessayer
+        </button>
       </div>
     );
   }
@@ -89,31 +101,33 @@ export default function WaterLevelCard({
           <Droplets className="h-4 w-4 mr-2 text-blue-500" />
           <span className="text-sm font-medium text-gray-600">{title}</span>
         </div>
-        {showPercentage && (
-          <span className={`text-sm font-medium ${textColor}`}>
-            {percentage}%
-          </span>
-        )}
+        <div className="flex items-center">
+          {showPercentage && (
+            <span className={`text-sm font-medium mr-2 ${textColor}`}>
+              {percentage}%
+            </span>
+          )}
+          <button 
+            onClick={handleRefresh}
+            className="text-gray-400 hover:text-blue-500 transition-colors"
+            disabled={isRefreshing}
+            title="Rafraîchir"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
       </div>
       
       <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
         <div 
-          className={`h-full rounded-full transition-all duration-500 ${color}`}
+          className={`h-full rounded-full ${color}`}
           style={{ width: `${percentage}%` }}
-        />
+        ></div>
       </div>
       
-      <div className="mt-2 flex items-center justify-between">
-        <span className="text-xs text-gray-500">0%</span>
-        <span className="text-xs text-gray-500">50%</span>
-        <span className="text-xs text-gray-500">100%</span>
-      </div>
-      
-      <div className="mt-2 text-sm text-gray-600">
-        {level.toFixed(1)} cm / {capacity} cm
-      </div>
-      <div className="text-xs text-gray-500 mt-1">
-        Last update: {lastUpdate.toLocaleTimeString('en-US')}
+      <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
+        <span>{level.toFixed(1)} / {capacity} L</span>
+        <span>Mis à jour: {lastUpdate.toLocaleTimeString('fr-FR')}</span>
       </div>
     </div>
   );
